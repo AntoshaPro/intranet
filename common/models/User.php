@@ -1,17 +1,20 @@
 <?php
 namespace common\models;
 
+
 use Yii;
 use yii\base\NotSupportedException;
-use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
-use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 use yii\helpers\Security;
 use backend\models\Role;
 use backend\models\Status;
 use backend\models\UserType;
+use frontend\models\Profile;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+use yii\helpers\Html;
 
 /**
  * Модель User
@@ -31,15 +34,17 @@ use backend\models\UserType;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    const STATUS_ACTIVE = 1;
+    const STATUS_ACTIVE = 10;
+
+
     public static function tableName()
     {
         return 'user';
     }
     /**
-     *behaviors
-     *Поведения
+     * @inheritdoc
      */
+
     public function behaviors()
     {
         return [
@@ -54,18 +59,23 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
     /**
-     * Правила валидации
+     * @inheritdoc
      */
+
     public function rules()
     {
         return [
             ['status_id', 'default', 'value' => self::STATUS_ACTIVE],
             [['status_id'], 'in', 'range'=> array_keys($this->getStatusList())],
-            ['role_id', 'default', 'value' => 1],
-            ['user_type_id', 'default', 'value' => 1],
+
+            ['role_id', 'default', 'value' => 10],
+            [['role_id'], 'in', 'range'=>array_keys($this->getRoleList())],
+
+            ['user_type_id', 'default', 'value' => 10],
+            [['user_type_id'], 'in', 'range'=>array_keys($this->getUserTypeList())],
 
             ['username', 'filter', 'filter' => 'trim'],
-            ['username', 'required'],
+            //['username', 'required'],
             ['username', 'unique'],
             ['username', 'string', 'min' => 2, 'max'=>255],
 
@@ -75,11 +85,20 @@ class User extends ActiveRecord implements IdentityInterface
             ['email','unique'],
         ];
     }
-    /*Атрибуты модели */
+    /* Атрибуты модели */
+
     public function attributeLabels()
     {
         return[
-            /*Еще атрибуты модели*/
+            'roleName'=> Yii::t('app', 'Role'),
+            'statusName'=> Yii::t('app', 'Status'),
+            'profileId'=> Yii::t('app', 'Profile'),
+            'profileLink'=> Yii::t('app', 'Profile'),
+            'userLink' => Yii::t('app', 'User'),
+            'username' => Yii::t('app', 'User'),
+            'userTypeName' => Yii::t('app', 'User Type'),
+            'userTypeId' => Yii::t('app', 'User Type'),
+            'userIdLink' => Yii::t('app', 'ID'),
         ];
     }
     /**
@@ -88,6 +107,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
+        /** @var integer $id */
         return static::findOne(['id' => $id, 'status_id' => self::STATUS_ACTIVE]);
     }
     /**
@@ -152,8 +172,11 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->auth_key;
     }
+
     /**
      * @validateAuthKey
+     * @param string $authKey
+     * @return bool
      */
 
     public function validateAuthKey($authKey)
@@ -312,4 +335,57 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->userType ? $this->userType->id : 'нет';
     }
+
+    /**
+     * @getProfile
+     *
+     */
+
+    public function getProfile()
+    {
+        return $this->hasOne(Profile::className(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @getProfileId
+     *
+     */
+
+    public function getProfileId()
+    {
+        return $this->profile ? $this->profile->id : 'нет';
+    }
+
+    /**
+     * @getProfileLink
+     *
+     */
+
+    public function getProfileLink()
+    {
+        $url = Url::to(['profile/view', 'id' => $this->getProfileId]);
+        $options = [];
+        return Html::a($this->profile ? 'profile' : 'Нет профиля', $url, $options);
+    }
+
+    public function getUserIdLink()
+    {
+        $url = Url::to(['user/update','id'=>$this->id]);
+        $options = [];
+        return Html::a($this->id, $url, $options);
+    }
+
+    /**
+     * @getUserLink
+     */
+
+    public function getUserLink()
+    {
+        $url = Url::to(['user/view', 'id'=>$this->Id]);
+        $options = [];
+        return Html::a($this->username, $url, $options);
+    }
+
+    /*Метки атрибутов модели*/
+
 }
