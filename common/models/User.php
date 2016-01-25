@@ -6,8 +6,10 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 use yii\helpers\Security;
+use backend\models\Role;
 
 /**
  * Модель User
@@ -199,5 +201,44 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     *  Реализация метода getUsers()
+     *
+     * @return \yii\db\ActiveQuery
+     *
+     */
+    public function getUsers()
+    {
+        return $this->hasMany(User::className(), ['role_id' => 'role_value']);
+    }
+
+    /**
+     * Реализация метода getRole
+     *
+     */
+
+    public function getRole()
+    {
+        return $this->hasOne(Role::className(),['role_value'=>'role_id']);
+    }
+     /**
+      * Реализация метода getRoleName()
+      *
+      */
+    public function getRoleName()
+    {
+        return $this->role ? $this->role->role_name : '- Роль не присвоена -';
+    }
+
+    /**
+     * Реализация getRoleList для выпадающего списка ролей
+     */
+
+    public function getRoleList()
+    {
+        $droptions = Role::find()->asArray()->all();
+        return ArrayHelper::map($droptions, 'role_value', 'role_name');
     }
 }
