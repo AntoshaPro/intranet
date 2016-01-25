@@ -102,20 +102,21 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
     /**
-     * Поиск идентификатора
-     * @findIdentity
+     * @inheritdoc
      */
     public static function findIdentity($id)
     {
-        /** @var integer $id */
         return static::findOne(['id' => $id, 'status_id' => self::STATUS_ACTIVE]);
     }
+
     /**
      * @inheritdoc
      */
+
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        throw new NotSupportedException('"findIdentityByAccessToken" не реализован.');
+        //  throw new NotSupportedException('"findIdentityByAccessToken" не реализован.');
+        return static::findOne(['auth_key'=> $token]);
     }
     /**
      * Поиск пользователя по имени пользователя
@@ -134,13 +135,18 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function findByPasswordResetToken($token)
     {
-        if (!static::isPasswordResetTokenValid($token)){
+        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        $parts = explode('_', $token);
+        $timestamp = (int) end($parts);
+        if($timestamp + $expire < time()){
+            // Токен истек
             return null;
         }
         return static::findOne([
             'password_reset_token' => $token,
             'status_id' => self::STATUS_ACTIVE,
         ]);
+
     }
     /**
      * Вычисляем если токен сброса пароля проходит проверку
@@ -148,7 +154,7 @@ class User extends ActiveRecord implements IdentityInterface
      * @return boolean
      */
 
-    public static function isPasswordResetTokenValid($token)
+  /*  public static function isPasswordResetTokenValid($token)
     {
         if(empty($token)){
             return false;
@@ -157,16 +163,21 @@ class User extends ActiveRecord implements IdentityInterface
         $parts = explode('_', $token);
         $timestamp = (int) end($parts);
         return $timestamp + $expire >= time();
-    }
+    } */
+
+
+
     /**
-     * @getId
+     * @inheritdoc
      */
     public function getId()
     {
         return $this->getPrimaryKey();
     }
+
+
     /**
-     * @getAuthKey
+     * @ingeritdoc
      */
     public function getAuthKey()
     {
@@ -183,6 +194,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->getAuthKey() === $authKey;
     }
+
+
     /**
      * Проверка пароля
      *
@@ -194,17 +207,21 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
+
+
     /**
      * Генерируем хэш пароля и устанавливем его в модель
      *
      * @param string $password
      */
+
+
     public function setPassword($password)
     {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
     }
     /**
-     * Генерируем ключи идентификации "запомнить меня"
+     * Генерируем ключ идентификации "запомнить меня"
      */
 
     public function generateAuthKey()
@@ -235,10 +252,15 @@ class User extends ActiveRecord implements IdentityInterface
      * @return \yii\db\ActiveQuery
      *
      */
-    public function getUsers()
+
+
+    /* public function getUsers()
     {
         return $this->hasMany(User::className(), ['role_id' => 'role_value']);
-    }
+    } */
+
+
+
 
     /**
      * Реализация метода getRole
@@ -270,6 +292,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Реализация метода getStatus()
+     * @getStatus
      */
 
     public function getStatus()
@@ -279,6 +302,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Реализация метода getStatusName()
+     * @getStatusName
      */
 
     public function getStatusName()
@@ -288,6 +312,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Реализация метода getStatusList() для выпадающего меню
+     * @getStatusList
      */
 
     public static function getStatusList()
@@ -296,45 +321,6 @@ class User extends ActiveRecord implements IdentityInterface
         return ArrayHelper::map($droptions, 'status_value', 'status_name');
     }
 
-    /**
-     * Получение типа пользователя
-     * Реализация метода getUserType
-     */
-
-    public function getUserType()
-    {
-        return $this->hasOne(UserType::className(), ['user_type_value' => 'user_type_id']);
-    }
-
-    /**
-     * Получение имени типа пользователя
-     * Реализация метода getUserTypeName
-     */
-
-    public function getUserTypeName()
-    {
-        return $this->userType ? $this->userType->user_type_name : '- нет типа пользователя-';
-    }
-
-    /**
-     * Получение списка типов пользователя для выпадающего меню
-     * Реализация статического метода getUserTypeList()
-     */
-    public static function getUserTypeList()
-    {
-        $droptions = UserType::find()->asArray()->all();
-        return ArrayHelper::map($droptions, 'user_type_value', 'user_type_name');
-    }
-
-    /**
-     * Получение айди типа пользователя
-     * Реализация метода getUserTypeId()
-     */
-
-    public function getUserTypeId()
-    {
-        return $this->userType ? $this->userType->id : 'нет';
-    }
 
     /**
      * @getProfile
@@ -363,10 +349,59 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getProfileLink()
     {
-        $url = Url::to(['profile/view', 'id' => $this->getProfileId]);
+        $url = Url::to(['profile/view', 'id' => $this->profileId]);
         $options = [];
         return Html::a($this->profile ? 'profile' : 'Нет профиля', $url, $options);
     }
+
+
+    /**
+     * Получение типа пользователя
+     * Реализация метода getUserType
+     */
+
+    public function getUserType()
+    {
+        return $this->hasOne(UserType::className(), ['user_type_value' => 'user_type_id']);
+    }
+
+    /**
+     * Получение имени типа пользователя
+     * Реализация метода getUserTypeName
+     * @getUserTypeName
+     */
+
+    public function getUserTypeName()
+    {
+        return $this->userType ? $this->userType->user_type_name : '- нет типа пользователя-';
+    }
+
+    /**
+     * Получение списка типов пользователя для выпадающего меню
+     * Реализация статического метода getUserTypeList()
+     * @getUserTypeList
+     */
+    public static function getUserTypeList()
+    {
+        $droptions = UserType::find()->asArray()->all();
+        return ArrayHelper::map($droptions, 'user_type_value', 'user_type_name');
+    }
+
+    /**
+     * Получение айди типа пользователя
+     * Реализация метода getUserTypeId()
+     * @getUserTypeId
+     */
+
+    public function getUserTypeId()
+    {
+        return $this->userType ? $this->userType->id : 'нет';
+    }
+
+    /**
+     * @getUserIdLink
+     * @return string
+     */
 
     public function getUserIdLink()
     {
@@ -377,6 +412,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * @getUserLink
+     * @return string
      */
 
     public function getUserLink()
