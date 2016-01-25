@@ -6,7 +6,7 @@ use yii\base\Model;
 use Yii;
 
 /**
- * Signup form
+ * Форма запроса регистрации
  */
 class SignupForm extends Model
 {
@@ -22,14 +22,14 @@ class SignupForm extends Model
         return [
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
-            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'Такое имя пользователя уже существует.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
 
             ['email', 'filter', 'filter' => 'trim'],
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
+            ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'Этот емейл адрес уже используется.'],
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
