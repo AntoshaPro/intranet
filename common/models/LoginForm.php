@@ -3,6 +3,7 @@ namespace common\models;
 
 use Yii;
 use yii\base\Model;
+use yii\web\NotFoundHttpException;
 
 /**
  * Login form
@@ -13,7 +14,7 @@ class LoginForm extends Model
     public $password;
     public $rememberMe = true;
 
-    private $_user;
+    private $_user = false;
 
 
     /**
@@ -22,36 +23,36 @@ class LoginForm extends Model
     public function rules()
     {
         return [
-            // username and password are both required
+            // имя пользователя и пароль оба необходимы
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
+            // rememberMe должна быть boolean
             ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
+            // проверка пароля осуществляется при помощи validatePassword()
             ['password', 'validatePassword'],
         ];
     }
 
     /**
-     * Validates the password.
-     * This method serves as the inline validation for password.
+     * Сверка пароля.
+     * Этот метод служит встроенной проверки допустимости пароля.
      *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
+     * @param string $attribute проверяемый атрибут
+     * @param array $params дополнительные параметры
      */
     public function validatePassword($attribute, $params)
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
             if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+                $this->addError($attribute, 'Имя пользователя или пароль не правильные.');
             }
         }
     }
 
     /**
-     * Logs in a user using the provided username and password.
+     * Пользователь входящий в систему в данный момент.
      *
-     * @return boolean whether the user is logged in successfully
+     * @return boolean возвращается при успехе
      */
     public function login()
     {
@@ -63,7 +64,7 @@ class LoginForm extends Model
     }
 
     /**
-     * Finds user by [[username]]
+     * Найти пользователя по [[username]]
      *
      * @return User|null
      */
