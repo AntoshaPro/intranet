@@ -10,6 +10,8 @@ use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 use yii\helpers\Security;
 use backend\models\Role;
+use backend\models\Status;
+use backend\models\UserType;
 
 /**
  * Модель User
@@ -58,6 +60,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['status_id', 'default', 'value' => self::STATUS_ACTIVE],
+            [['status_id'], 'in', 'range'=> array_keys($this->getStatusList())],
             ['role_id', 'default', 'value' => 1],
             ['user_type_id', 'default', 'value' => 1],
 
@@ -240,5 +243,73 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $droptions = Role::find()->asArray()->all();
         return ArrayHelper::map($droptions, 'role_value', 'role_name');
+    }
+
+    /**
+     * Реализация метода getStatus()
+     */
+
+    public function getStatus()
+    {
+        return $this->hasOne(Status::className(), ['status_value' => 'status_id']);
+    }
+
+    /**
+     * Реализация метода getStatusName()
+     */
+
+    public function getStatusName()
+    {
+        return $this->status ? $this->status->status_name : '- нет статуса -';
+    }
+
+    /**
+     * Реализация метода getStatusList() для выпадающего меню
+     */
+
+    public static function getStatusList()
+    {
+        $droptions = Status::find()->asArray()->all();
+        return ArrayHelper::map($droptions, 'status_value', 'status_name');
+    }
+
+    /**
+     * Получение типа пользователя
+     * Реализация метода getUserType
+     */
+
+    public function getUserType()
+    {
+        return $this->hasOne(UserType::className(), ['user_type_value' => 'user_type_id']);
+    }
+
+    /**
+     * Получение имени типа пользователя
+     * Реализация метода getUserTypeName
+     */
+
+    public function getUserTypeName()
+    {
+        return $this->userType ? $this->userType->user_type_name : '- нет типа пользователя-';
+    }
+
+    /**
+     * Получение списка типов пользователя для выпадающего меню
+     * Реализация статического метода getUserTypeList()
+     */
+    public static function getUserTypeList()
+    {
+        $droptions = UserType::find()->asArray()->all();
+        return ArrayHelper::map($droptions, 'user_type_value', 'user_type_name');
+    }
+
+    /**
+     * Получение айди типа пользователя
+     * Реализация метода getUserTypeId()
+     */
+
+    public function getUserTypeId()
+    {
+        return $this->userType ? $this->userType->id : 'нет';
     }
 }
