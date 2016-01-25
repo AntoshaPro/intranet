@@ -3,9 +3,15 @@
 namespace frontend\models;
 
 use Yii;
+use common\models\User;
+use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\db\Expression;
 
 /**
- * This is the model class for table "profile".
+ * Это модель объекта для таблицы "profile".
  *
  * @property integer $id
  * @property integer $user_id
@@ -49,14 +55,14 @@ class Profile extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
-            'first_name' => 'First Name',
-            'second_name' => 'Second Name',
-            'last_name' => 'Last Name',
-            'birthdate' => 'Birthdate',
-            'gender_id' => 'Gender ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'user_id' => 'Идентификатор пользователя',
+            'first_name' => 'Имя',
+            'second_name' => 'Отчество',
+            'last_name' => 'Фамилия',
+            'birthdate' => 'Дата рождения',
+            'gender_id' => 'Пол',
+            'created_at' => 'Дата создание профиля',
+            'updated_at' => 'Дата обновления',
         ];
     }
 
@@ -66,5 +72,98 @@ class Profile extends \yii\db\ActiveRecord
     public function getGender()
     {
         return $this->hasOne(Gender::className(), ['id' => 'gender_id']);
+    }
+
+    /**
+     * Реализация метода поведений для контроля меткой времени, не забывайте объявлять операторы
+     */
+
+    public function behaviors()
+    {
+        return[
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
+
+    /**
+     * Использование магии getGender
+     * Вернуть наименование пола
+     */
+
+    public function getGenderName()
+    {
+        return $this->gender->gender_name;
+    }
+
+    /**
+     * Реализация метода getGenderList() для выпадающего мендю
+     */
+
+    public function getGenderList()
+    {
+        $droptions = Gender::find()->asArray()->all();
+        return ArrayHelper::map($droptions, 'id', 'gender_name');
+    }
+
+    /**
+     * Возвращаем запрос из базы данных
+     * @return \yii\db\ActiveQuery
+     * Реализуем метод getUser()  по id
+     *
+     */
+
+    public function getUser()
+    {
+        return $this->hasOne(User::className(),['id' => 'user_id']);
+    }
+
+    /**
+     * Реализация метода getUsername для извлечения имени пользователя
+     * @get Username
+     */
+
+    public function getUserName()
+    {
+        return $this->user->username;
+    }
+
+    /**
+     * @getUserId
+     * Реализация метода getUserId для извлечения айди пользователя
+     */
+
+    public function getUserId()
+    {
+        return $this->user ? $this->user->id : 'идентификатор отсутствует';
+    }
+
+    /**
+     * Реализация метода getUserLink ссылка на профиль
+     * @getUserLink
+     */
+
+    public function getUserLink()
+    {
+        $url = Url::to(['user/view', 'id'=>$this->UserId]);
+        $options = [];
+        return Html::a($this->getUserName(), $url, $options);
+    }
+
+    /**
+     * @getProfileLink
+     */
+
+    public function getProfileLink()
+    {
+        $url = Url::to(['profile/update', 'id'=>$this->id]);
+        $options = [];
+        return Html::a($this->id, $url, $options);
     }
 }
