@@ -107,5 +107,5 @@ class PermissionHelpers
             return false;
         }
     }
-    
+
 }
