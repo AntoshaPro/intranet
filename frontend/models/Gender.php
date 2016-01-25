@@ -5,7 +5,7 @@ namespace frontend\models;
 use Yii;
 
 /**
- * This is the model class for table "gender".
+ * Это модель объекта таблицы "gender".
  *
  * @property integer $id
  * @property string $gender_name
