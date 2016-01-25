@@ -14,7 +14,8 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
 /**
- * Site controller
+ * Site Controller
+ * Контроллер Сайта
  */
 class SiteController extends Controller
 {
@@ -66,7 +67,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
+     * Отображение домашней страницы
      *
      * @return mixed
      */
@@ -76,7 +77,8 @@ class SiteController extends Controller
     }
 
     /**
-     * Logs in a user.
+     * Вошедший пользователь
+     * Перенаправляем на домашнюю страницу пользователя.
      *
      * @return mixed
      */
@@ -97,7 +99,8 @@ class SiteController extends Controller
     }
 
     /**
-     * Logs out the current user.
+     * Вышедший конкретный пользователь.
+     * Перенаправляем на общую страницу.
      *
      * @return mixed
      */
@@ -109,7 +112,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays contact page.
+     *  Отображение страницы контактов
      *
      * @return mixed
      */
@@ -132,7 +135,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays about page.
+     * Отображение страницы о нас
      *
      * @return mixed
      */
@@ -142,7 +145,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Signs user up.
+     * Регистрация пользователя.
      *
      * @return mixed
      */
@@ -163,7 +166,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Requests password reset.
+     * Запрос на сброс пароля
      *
      * @return mixed
      */
@@ -172,11 +175,11 @@ class SiteController extends Controller
         $model = new PasswordResetRequestForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail()) {
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+                Yii::$app->session->setFlash('success', 'Проверьте Ваш почту для дальнейших инструкций.');
 
                 return $this->goHome();
             } else {
-                Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for email provided.');
+                Yii::$app->session->setFlash('error', 'Извините, мы не можем изменить пароль для указанного почтового адреса.');
             }
         }
 
@@ -186,7 +189,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Resets password.
+     * Сброс пароля
      *
      * @param string $token
      * @return mixed
@@ -201,7 +204,7 @@ class SiteController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
-            Yii::$app->session->setFlash('success', 'New password was saved.');
+            Yii::$app->session->setFlash('success', 'Новый пароль сохранен.');
 
             return $this->goHome();
         }
