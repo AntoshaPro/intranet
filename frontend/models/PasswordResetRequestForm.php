@@ -5,7 +5,7 @@ use common\models\User;
 use yii\base\Model;
 
 /**
- * Password reset request form
+ * Запрос сброса пароля
  */
 class PasswordResetRequestForm extends Model
 {
@@ -23,7 +23,8 @@ class PasswordResetRequestForm extends Model
             ['email', 'exist',
                 'targetClass' => '\common\models\User',
                 'filter' => ['status_id' => User::STATUS_ACTIVE],
-                'message' => 'There is no user with such email.'
+                'message' => 'Адреса электронной корпоративной почты с таким именем не существует. Проверьте правильность
+                набора и повторите попытку.'
             ],
         ];
     }
