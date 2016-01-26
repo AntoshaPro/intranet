@@ -25,7 +25,7 @@ class ValueHelpers
         $command->bindValue(':role_name', $role_name);
         $result = $command->queryOne();
 
-        return $result['role_value'];
+        return $result["'role_value'"];
     }
 
     /**
@@ -42,7 +42,7 @@ class ValueHelpers
         $command->bindValue(":status_name", $status_name);
         $result = $command->queryOne();
 
-        return $result['status_value'];
+        return $result["'status_value'"];
     }
 
     /**
@@ -55,7 +55,7 @@ class ValueHelpers
     public static function getUserTypeValue($user_type_name)
     {
         $connection = \Yii::$app->db;
-        $sql = 'SELECT user_type_value FROM user_type WHERE user_type_name=:user_type_name';
+        $sql = "SELECT user_type_value FROM user_type WHERE user_type_name=:\'user_type_name\'";
         $command = $connection->createCommand($sql);
         $command->bindValue(":user_type_name", $user_type_name);
         $resul = $command->queryOne();
