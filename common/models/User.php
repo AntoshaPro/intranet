@@ -305,7 +305,7 @@ class User extends ActiveRecord implements IdentityInterface
     }
     /**
      * Получение имени типа пользователя
-     * Реализация метода getUserTypeName
+     * Реализация метода @getUserTypeName
      * @getUserTypeName
      */
     public function getUserTypeName()
