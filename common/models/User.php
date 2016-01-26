@@ -31,7 +31,7 @@ use yii\helpers\Html;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    const STATUS_ACTIVE = 10;
+    const STATUS_ACTIVE = 1;
     public static function tableName()
     {
         return 'user';
@@ -60,14 +60,18 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status_id', 'default', 'value' => self::STATUS_ACTIVE],
             [['status_id'], 'in', 'range'=> array_keys($this->getStatusList())],
-            ['role_id', 'default', 'value' => 10],
+
+            ['role_id', 'default', 'value' => 1],
             [['role_id'], 'in', 'range'=>array_keys($this->getRoleList())],
-            ['user_type_id', 'default', 'value' => 10],
+
+            ['user_type_id', 'default', 'value' => 1],
             [['user_type_id'], 'in', 'range'=>array_keys($this->getUserTypeList())],
+
             ['username', 'filter', 'filter' => 'trim'],
-            //['username', 'required'],
+            ['username', 'required'],
             ['username', 'unique'],
             ['username', 'string', 'min' => 2, 'max'=>255],
+
             ['email', 'filter', 'filter'=> 'trim'],
             ['email', 'required'],
             ['email', 'email'],
