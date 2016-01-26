@@ -3,8 +3,8 @@
 namespace frontend\models;
 
 use Yii;
-use common\models\User;
 use yii\db\ActiveRecord;
+use common\models\User;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\helpers\Html;
@@ -36,6 +36,25 @@ class Profile extends \yii\db\ActiveRecord
     }
 
     /**
+     * Реализация метода поведений для контроля меткой времени, не забывайте объявлять операторы
+     */
+
+    public function behaviors()
+    {
+        return[
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
+
+
+    /**
      * @inheritdoc
      */
     public function rules()
@@ -43,7 +62,9 @@ class Profile extends \yii\db\ActiveRecord
         return [
             [['user_id', 'gender_id'], 'required'],
             [['user_id', 'gender_id'], 'integer'],
+            [['gender_id'], 'in', 'range'=>array_keys($this->getGenderList())],
             [['first_name', 'second_name', 'last_name'], 'string'],
+            [['birthdate'], 'date', 'format'=>'d-m-Y'],
             [['birthdate', 'created_at', 'updated_at'], 'safe']
         ];
     }
@@ -63,8 +84,18 @@ class Profile extends \yii\db\ActiveRecord
             'gender_id' => 'Пол',
             'created_at' => 'Дата создание профиля',
             'updated_at' => 'Дата обновления',
+        /*    'genderName' => Yii::t('app', 'Gender'),
+            'userLink' => Yii::t('app', 'Profile'),
+            'profileLink' => Yii::t('app', 'Profile'),*/
         ];
     }
+
+
+
+    /**
+     * Использование магии getGender
+     * Вернуть наименование пола
+     */
 
     /**
      * @return \yii\db\ActiveQuery
@@ -74,28 +105,6 @@ class Profile extends \yii\db\ActiveRecord
         return $this->hasOne(Gender::className(), ['id' => 'gender_id']);
     }
 
-    /**
-     * Реализация метода поведений для контроля меткой времени, не забывайте объявлять операторы
-     */
-
-    public function behaviors()
-    {
-        return[
-            'timestamp' => [
-                'class' => 'yii\behaviors\TimestampBehavior',
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                ],
-                'value' => new Expression('NOW()'),
-            ],
-        ];
-    }
-
-    /**
-     * Использование магии getGender
-     * Вернуть наименование пола
-     */
 
     public function getGenderName()
     {
@@ -129,7 +138,7 @@ class Profile extends \yii\db\ActiveRecord
      * @get Username
      */
 
-    public function getUserName()
+    public function getUsername()
     {
         return $this->user->username;
     }

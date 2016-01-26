@@ -37,7 +37,7 @@ class ValueHelpers
     public static function getStatusValue($status_name)
     {
         $connection = \Yii::$app->db;
-        $sql = "SELECT status_value FROM status WHERE status_name= :\'status_name\'";
+        $sql = "SELECT status_value FROM status WHERE status_name= :status_name";
         $command = $connection->createCommand($sql);
         $command->bindValue(":status_name", $status_name);
         $result = $command->queryOne();
@@ -55,7 +55,7 @@ class ValueHelpers
     public static function getUserTypeValue($user_type_name)
     {
         $connection = \Yii::$app->db;
-        $sql = "SELECT user_type_value FROM user_type WHERE user_type_name=:\'user_type_name\'";
+        $sql = "SELECT user_type_value FROM user_type WHERE user_type_name=:user_type_name";
         $command = $connection->createCommand($sql);
         $command->bindValue(":user_type_name", $user_type_name);
         $resul = $command->queryOne();

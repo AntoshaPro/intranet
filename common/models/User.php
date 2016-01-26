@@ -5,7 +5,7 @@ use yii\base\NotSupportedException;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\web\IdentityInterface;
-use yii\helpers\Security;
+use yii\base\Security;
 use backend\models\Role;
 use backend\models\Status;
 use backend\models\UserType;
@@ -27,11 +27,13 @@ use yii\helpers\Html;
  * @property integer $user_type_id
  * @property integer $created_at
  * @property integer $updated_at
- * @property string $password write-only password
+ * @property string $password только запись
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_ACTIVE = 1;
+
+
     public static function tableName()
     {
         return 'user';
