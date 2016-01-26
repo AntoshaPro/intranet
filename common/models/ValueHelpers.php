@@ -37,7 +37,7 @@ class ValueHelpers
     public static function getStatusValue($status_name)
     {
         $connection = \Yii::$app->db;
-        $sql = 'SELECT status_value FROM status WHERE status_name=:status_name';
+        $sql = "SELECT status_value FROM status WHERE status_name= :\'status_name\'";
         $command = $connection->createCommand($sql);
         $command->bindValue(":status_name", $status_name);
         $result = $command->queryOne();
