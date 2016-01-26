@@ -1,65 +1,81 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Проскурин Антон
+ * User: AntoshaPro
  * Date: 25.01.16
  * Time: 16:36
  */
 
 namespace common\models;
 
+use yii;
+use backend\models\Role;
+use backend\models\Status;
+use backend\models\UserType;
+use common\models\User;
+
 class ValueHelpers
 {
     /**
-     * возвращает значение имени роли в строку
-     * к примеру: 'Admin'
-     *
-     * @param mixed $role_name
+     * @param $role_name
+     * @return bool
      */
+    public static function roleMatch($role_name)
+    {
+        $userHasRoleName = Yii::$app->user->identity->role->role_name;
+        return $userHasRoleName == $role_name ? true : false;
+    }
+
+    /**
+     * @param null $userId
+     * @return bool
+     */
+    public static function getUsersRoleValue($userId = null)
+    {
+        if($userId == null){
+            $usersRoleValue = Yii::$app->user->identity->role->role_value;
+            return isset($usersRoleValue) ? $usersRoleValue : false;
+        } else {
+
+            $user = User::findOne($userId);
+
+            $usersRoleValue = $user->role->role_value;
+
+            return isset($usersRoleValue) ? $usersRoleValue : false;
+        }
+    }
 
     public static function getRoleValue($role_name)
     {
-        $connection = \Yii::$app->db;
-        $sql = 'SELECT role_value FROM role WHERE role_name=:role_name';
-        $command = $connection->createCommand($sql);
-        $command->bindValue(':role_name', $role_name);
-        $result = $command->queryOne();
 
-        return $result["'role_value'"];
+        $role = Role::find('role_value')->where(['role_name' => $role_name])->one();
     }
 
-    /**
-     * возвращает значение имени статуса в строку
-     * например: 'Активный'
-     * @param mixed $status_name
-     */
-
-    public static function getStatusValue($status_name)
+    public static function isRoleNameValid($role_name)
     {
-        $connection = \Yii::$app->db;
-        $sql = "SELECT status_value FROM status WHERE status_name= :status_name";
-        $command = $connection->createCommand($sql);
-        $command->bindValue(":status_name", $status_name);
-        $result = $command->queryOne();
+        $role = Role::find('role_name')->where(['role_name' => $role_name])->one();
 
-        return $result["'status_value'"];
+        return isset($role->role_name) ? true : false;
     }
 
-    /**
-     * Возвращает значение user_type_name так что можно использовать в методах PermissionHelpers
-     * в строку. Например 'Руководитель'
-     *
-     * @param mixed $user_type_name
-     */
-
-    public static function getUserTypeValue($user_type_name)
+    public static function statusMatch($status_name)
     {
-        $connection = \Yii::$app->db;
-        $sql = "SELECT user_type_value FROM user_type WHERE user_type_name=:user_type_name";
-        $command = $connection->createCommand($sql);
-        $command->bindValue(":user_type_name", $user_type_name);
-        $resul = $command->queryOne();
+        $userHasStatusName = Yii::$app->user->identity->status->status_name;
 
-        return $resul['user_type_value'];
+        return $userHasStatusName == $status_name ? true : false;
+    }
+
+    public static function getStatusId($status_name)
+    {
+        $status = Status::find('id')->where(['status_name' => $status_name])->one();
+
+        return isset($status->id) ? $status->id : false;
+    }
+
+    public static function userTypeMatch($user_type_name)
+    {
+        $userHasUserTypeName = Yii::$app->user->identity->userType->user_type_name;
+
+        return $userHasUserTypeName == $user_type_name ? true : false;
     }
 }
