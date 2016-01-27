@@ -122,9 +122,9 @@ class ProfileController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        $model = Profile::find()->where(['useri_id'=> Yii::$app->user->identity->id])->one();
+        $this->findModel($model->id)->delete();
+        return $this->redirect(['site/index']);
     }
 
     /**
@@ -139,7 +139,7 @@ class ProfileController extends Controller
         if (($model = Profile::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException('Запрашиваемая страница не существует.');
         }
     }
 }
