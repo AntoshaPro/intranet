@@ -44,7 +44,7 @@ class ProfileController extends Controller
     public function actionIndex()
     {
         if($already_exists = RecordHelpers::userHas('profile')){
-            return $this->('view', [
+            return $this->render('view', [
                 'model'=> $this->findModel($already_exists),
             ]);
         } else{
@@ -101,15 +101,17 @@ class ProfileController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
+       if($model = Profile::find()->where(['user_id' => Yii::$app->user->identity->id])->one()) {
+           if($model->load(Yii::$app->request->post()) && $model->save()) {
+               return $this->redirect(['view']);
+           } else {
+               return $this->render('update', [
+                   'model' => $model,
+               ]);
+           }
+       } else {
+           throw new NotFoundHttpException('Нет такого профиля');
+       }
     }
 
     /**
