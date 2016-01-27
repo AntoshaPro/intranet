@@ -8,7 +8,7 @@ use common\models\PermissionHelpers;
 /* @var $model frontend\models\Profile */
 
 "Профайл ". $this->title = $model->user->username;
-$this->params['breadcrumbs'][] = ['label' => 'Profiles', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Учетная запись', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="profile-view">
