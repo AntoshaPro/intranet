@@ -17,7 +17,7 @@ use yii\jui\DatePicker;
     <br>
     <?php echo $form->field($model,'birthdate')->widget(DatePicker::className(),
         [   'language' => 'ru',
-            'dateFormat' => 'php:d-m-Y',
+            'dateFormat' => 'php:d-F-Y',
             'clientOptions' => [
                 'yearRange' => '-115:+0',
                 'changeYear' => 'true',
