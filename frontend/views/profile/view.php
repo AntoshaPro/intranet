@@ -20,12 +20,12 @@ $this->params['breadcrumbs'][] = $this->title;
         if (PermissionHelpers::userMustBeOwner('profile', $model->id)) {
             echo Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }?>
-        <?= Html::a('Удалить', ['delete', 'id'=>$model->id], [
+        <!--<?/*= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
-            'data' => ['confirm'=> Yii::t('app','Вы действительно хотите это удалить?'),
+            'data' => ['confirm' => Yii::t('app', 'Вы действительно хотите это удалить?'),
                 'method' => 'post',
-                ],
-            ])?>
+            ],
+        ]) */?> -->
     </p>
 
     <?= DetailView::widget([
