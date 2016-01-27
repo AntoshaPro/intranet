@@ -18,9 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?php
         if (PermissionHelpers::userMustBeOwner('profile', $model->id)) {
-            echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            echo Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }?>
-        <?= Html::a('Delete', ['delete', 'id'=>$model->id], [
+        <?= Html::a('Удалить', ['delete', 'id'=>$model->id], [
             'class' => 'btn btn-danger',
             'data' => ['confirm'=> Yii::t('app','Вы действительно хотите это удалить?'),
                 'method' => 'post',
@@ -35,6 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'user.username',
             'first_name',
             //'second_name:ntext',
+            'second_name',
             'last_name:ntext',
             'birthdate',
             'gender.gender_name',
