@@ -64,7 +64,7 @@ class Profile extends \yii\db\ActiveRecord
             [['user_id', 'gender_id'], 'integer'],
             [['gender_id'],'in', 'range'=>array_keys($this->getGenderList())],
             [['first_name', 'second_name', 'last_name'], 'string'],
-            [['birthdate'], 'date', 'format'=>'php:d-F-Y'],
+            [['birthdate'], 'date', 'format'=>'php:d-m-Y'],
             [['birthdate', 'created_at', 'updated_at'], 'safe']
         ];
     }
